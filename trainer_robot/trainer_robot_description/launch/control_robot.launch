@@ -1,0 +1,6 @@
+<launch>
+    <rosparam command="load" ns="/" file="$(find trainer_robot_description)/config/control.yaml" />   
+    
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" 
+        args="robot_joint_publisher trainer_robot" />
+</launch>

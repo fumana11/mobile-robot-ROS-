@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- <env name="GAZEBO_MODEL_PATH" value="$(find trainer_robot_description)/models:$(optenv GAZEBO_MODEL_PATH)"/> -->
+  <env name="GAZEBO_RESOURCE_PATH" value="$(find trainer_robot_description)/worlds$(optenv GAZEBO_RESOURCE_PATH)"/>
+
+  <arg name="x" default="0"/>
+  <arg name="y" default="0"/>
+  <arg name="z" default="0.09"/>
+
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find trainer_robot_description)/worlds/track.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+  <param name="robot_description" 
+        command="$(find xacro)/xacro '$(find trainer_robot_description)/urdf/world.urdf.xacro'"/>
+
+  <!-- <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" output="screen"
+        args="-urdf -param robot_description -model robot -x $(arg x) -y $(arg y) -z $(arg z)" /> -->
+
+  <!-- Combine joint values -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+
+  <!-- Show in Rviz   -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find trainer_robot_description)/rviz/visualize.rviz"/>
+
+  <!-- <include file="$(find trainer_robot_description)/launch/needle_bot_control.launch" /> -->
+</launch>

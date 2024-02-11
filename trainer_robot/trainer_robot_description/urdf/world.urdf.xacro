@@ -1,0 +1,118 @@
+<?xml version="1.0" ?>
+
+<robot name="track_trainer_bot" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:include filename="$(find trainer_robot_description)/urdf/common_properties.xacro"/>
+
+  <xacro:property name="base_track_width" value="1.2" /> <!-- Base -->
+  <xacro:property name="base_track_length" value="2" /> <!-- Base -->
+  <xacro:property name="base_track_height" value="0.009" /> <!-- Base -->
+  <xacro:property name="track_height" value="1.2" /> <!-- track -->
+  <xacro:property name="camera_width"  value="0.044" /> <!-- camera -->
+  <xacro:property name="camera_length" value="0.095" /> <!-- camera -->
+  <xacro:property name="camera_height" value="0.024" /> <!-- camera -->
+
+  <joint name="base_track_joint" type="fixed">
+    <parent link="world"/>
+    <child link="track"/>
+    <origin xyz="0.0 0.0 0" rpy="0 0 0"/>
+  </joint>
+  <link name="world"/>
+
+  <link name="track">
+    <visual>
+      <origin xyz="0 0 -${base_track_height/2}" rpy="0 0.0 0"/>
+      <geometry>
+        <mesh filename="package://trainer_robot_description/meshes/base_track.dae"/>
+        <!-- <box size="${base_track_length} ${base_track_width} ${base_track_height}"/> -->
+      </geometry>
+      <material name="green"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 -${base_track_height/2}" rpy="0 0.0 0"/>
+      <geometry>
+        <!-- <mesh filename="package://trainer_robot_description/meshes/base_track.dae"/> -->
+        <box size="${base_track_length} ${base_track_width} ${base_track_height}"/>
+      </geometry>
+      <material name="green"/>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 -${base_track_height/2}" rpy="0 0.0 0"/>
+      <mass value="50.00000000"/>
+      <inertia ixx="7.90866056" ixy="0.00000006" ixz="0.00000000" iyy="7.90866060" iyz="0.00000000" izz="2.48398783"/>
+    </inertial>
+  </link>
+
+  <joint name="camera_joint" type="fixed">
+    <parent link="track"/>
+    <child link="camera_link"/>
+    <origin xyz="0.0 0.0 ${track_height+base_track_height}" rpy="1.57 1.57 0"/>
+  </joint>
+
+  <link name="camera_link">
+    <visual>
+      <origin xyz="0 0 0.0" rpy="0 0.0 0"/>
+      <geometry>
+        <box size="${camera_width} ${camera_length} ${camera_height}"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0.0" rpy="0 0.0 0"/>
+      <geometry>
+        <box size="${camera_width} ${camera_length} ${camera_height}"/>
+      </geometry>
+      <material name="grey"/>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0.0" rpy="0 0.0 0"/>
+      <mass value="0.5"/>
+      <inertia ixx="7.90866056" ixy="0.00000006" ixz="0.00000000" iyy="7.90866060" iyz="0.00000000" izz="2.48398783"/>
+    </inertial>
+  </link>
+
+  <!-- camera -->
+  <gazebo reference="camera_link">
+    <sensor type="camera" name="camera">
+      <update_rate>30.0</update_rate>
+      <visualize>false</visualize>
+      <camera name="head">
+        <horizontal_fov>1.36136</horizontal_fov>
+        <aspect_ratio>1.8</aspect_ratio>
+        <image>
+          <width>1080</width>
+          <height>720</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.02</near>
+          <far>300</far>
+        </clip>
+        <noise>
+          <type>gaussian</type>
+          <!-- Noise is sampled independently per pixel on each frame.
+               That pixel's noise value is added to each of its color
+               channels, which at that point lie in the range [0,1]. -->
+          <mean>0.0</mean>
+          <stddev>0.007</stddev>
+        </noise>
+      </camera>
+      <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>0.0</updateRate>
+        <cameraName>/camera</cameraName>
+        <imageTopicName>image_raw</imageTopicName>
+        <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+        <frameName>camera_link</frameName>
+        <!-- <hackBaseline>0.0</hackBaseline> -->
+        <distortionK1>0.11480806073904032</distortionK1>
+        <distortionK2>-0.21946985653851792</distortionK2>
+        <distortionK3>0.11274677130853494</distortionK3>
+        <distortionT1>0.0012002116999769957</distortionT1>
+        <distortionT2>0.008564577708855225</distortionT2>
+      </plugin>
+    </sensor>
+  </gazebo>
+  
+</robot>
