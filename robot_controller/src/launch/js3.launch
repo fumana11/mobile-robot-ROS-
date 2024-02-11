@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<launch>
+    
+    <node name="camera"     pkg="tutorial" type="camera.py"/>
+    <node name="controller" pkg="robot_controller" type="controller_robot.py"/>
+    <node name="rosserial"  pkg="rosserial_python" type="serial_node.py" args="tcp"/>
+    
+</launch>
